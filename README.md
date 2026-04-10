@@ -39,7 +39,7 @@ Install all of these via [HACS](https://hacs.xyz/) → Frontend:
 | [bubble-card](https://github.com/Clooos/Bubble-Card) | Settings and sound picker pop-ups |
 | [mushroom](https://github.com/piitaya/lovelace-mushroom) | Number sliders (brightness, hue) |
 | [time-picker-card](https://github.com/GeorgeSG/lovelace-time-picker-card) | Alarm time picker |
-| [select-list-card](https://github.com/mattierahman/ha-select-list-card) | Scrollable song list |
+| [select-list-card](https://github.com/DoubtfulTurnip/select-list-card/releases/tag/v2.0.3) | Scrollable song list |
 | [card-mod](https://github.com/thomasloven/lovelace-card-mod) | Custom card styling |
 | [grid-layout](https://github.com/thomasloven/lovelace-layout-card) | Dashboard layout |
 
