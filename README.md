@@ -2,9 +2,8 @@
 
 A fully-featured, tablet-optimized alarm clock for Home Assistant. Designed to run full-screen on a dedicated bedroom tablet — looks great, sounds great, and is completely controlled from within HA.
 
-![Alarm Clock Screenshot](docs/screenshot1.png)
-![Alarm Clock Screenshot](docs/screenshot2.png)
-![Alarm Clock Screenshot](docs/screenshot3.png)
+![Alarm Clock Screenshot](docs/screenshot.png)
+
 ---
 
 ## ✨ Features
@@ -61,26 +60,22 @@ Create the folder `/config/www/alarm_sounds/` and place your `.mp3` files in it.
 
 > You must also include a silent file named `mute.mp3` — this is played first to "wake up" the media player before the real alarm sound. A 1-second silent MP3 works perfectly.
 
-### Step 2 — Update `configuration.yaml`
-Add the following (merge with any existing content — do not replace):
+### Step 2 — One-time `configuration.yaml` addition
+This is the **only** change needed outside the package file. Add the `allowlist_external_dirs` entry to your existing `homeassistant:` block:
 
 ```yaml
 homeassistant:
   allowlist_external_dirs:
-    - "/config/www/alarm_sounds"
-  packages: !include_dir_named packages   # skip if already present
-
-sensor:
-  - platform: folder
-    folder: /config/www/alarm_sounds
+    - "/config/www/alarm_sounds"   # update path if storing sounds elsewhere
+  packages: !include_dir_named packages   # skip if you already use packages
 ```
 
-See `package/configuration_yaml_additions.yaml` for the full annotated version.
+Everything else — the folder sensor, template sensors, helpers, scripts, and automations — all live together in the package file. After this one restart, future changes only need a package or template reload.
 
 ### Step 3 — Install the package
 Copy `package/alarm_clock.yaml` to `/config/packages/alarm_clock.yaml`.
 
-> If you don't have a `packages/` folder yet, create it and add `packages: !include_dir_named packages` under `homeassistant:` in your `configuration.yaml`.
+> If you don't have a `packages/` folder yet, create it first, then add `packages: !include_dir_named packages` under `homeassistant:` as shown in Step 2.
 
 ### Step 4 — Customize the package
 Open `alarm_clock.yaml` and search for `CUSTOMIZE` comments. At minimum, update:
@@ -103,7 +98,7 @@ Open `alarm_clock.yaml` and search for `CUSTOMIZE` comments. At minimum, update:
    - Background image path (or remove the `background:` block entirely)
 
 ### Step 6 — Restart Home Assistant
-Restart HA, then navigate to the alarm clock dashboard view on your tablet.
+Restart HA once to pick up the `allowlist_external_dirs` change and load the package. After that, navigate to the alarm clock dashboard view on your tablet.
 
 ---
 
@@ -151,8 +146,9 @@ User taps Dismiss
 ha-alarm-clock/
 ├── README.md
 ├── package/
-│   ├── alarm_clock.yaml                  ← All helpers, scripts, automations
-│   └── configuration_yaml_additions.yaml ← What to add to configuration.yaml
+│   ├── alarm_clock.yaml                  ← Everything: folder sensor, helpers,
+│   │                                       template sensors, scripts, automations
+│   └── configuration_yaml_additions.yaml ← One-time allowlist entry for configuration.yaml
 ├── dashboard/
 │   └── alarm_clock_view.yaml             ← Lovelace view YAML
 └── docs/
