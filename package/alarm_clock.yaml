@@ -15,7 +15,28 @@
 #   - Auto-stop after 3 minutes if not dismissed
 #
 # REQUIRED CUSTOMIZATION — search for "CUSTOMIZE" comments below
+#
+# configuration.yaml prerequisite (cannot be placed in a package file):
+#
+#   homeassistant:
+#     allowlist_external_dirs:
+#       - "/config/www/alarm_sounds"   # CUSTOMIZE: update if using a different path
+#
+# Everything else — including the folder sensor — lives in this file.
+# After adding the allowlist entry, a full HA restart is required once.
+# After that, changes to this package only need a package/template reload.
 ###############################################################################
+
+
+###############################################################################
+# FOLDER SENSOR
+# Scans your alarm_sounds directory so the song picker stays up to date.
+# CUSTOMIZE: Update the folder path if you store sounds elsewhere.
+###############################################################################
+
+sensor:
+  - platform: folder
+    folder: /config/www/alarm_sounds
 
 
 ###############################################################################

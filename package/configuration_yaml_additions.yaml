@@ -1,37 +1,18 @@
 ###############################################################################
-# configuration.yaml additions for HA Alarm Clock
+# configuration.yaml — required addition for HA Alarm Clock
 #
-# Add the following to your existing configuration.yaml.
-# Do NOT replace your entire configuration.yaml — only add what's missing.
+# This is the ONLY thing that cannot live in the package file.
+# Add it to your existing homeassistant: block and restart HA once.
+# After that, all other changes only require a package/template reload.
+#
+# CUSTOMIZE: Update the path if your alarm sounds folder is elsewhere.
 ###############################################################################
-
-
-# ----- 1. Allow HA to read your alarm sounds folder -------------------------
-#
-# CUSTOMIZE: Replace the path below if you store sounds elsewhere.
-# The folder must be under /config/www/ to be served via /local/ URLs.
 
 homeassistant:
   allowlist_external_dirs:
     - "/config/www/alarm_sounds"
 
-
-# ----- 2. Folder sensor — scans the alarm sounds directory -----------------
+# If you haven't already enabled packages, also add:
 #
-# This creates sensor.alarm_sounds with a file_list attribute.
-# The "Auto Populate Song List" automation reads it to fill the dropdown.
-
-sensor:
-  - platform: folder
-    folder: /config/www/alarm_sounds
-
-
-# ----- 3. Packages — enable the alarm clock package ------------------------
-#
-# If you haven't already enabled packages, add this to your homeassistant: block:
-#
-# homeassistant:
-#   packages: !include_dir_named packages
-#
-# Then place alarm_clock.yaml in your /config/packages/ folder.
-# If you already use packages, just drop the file in — no config.yaml change needed.
+#   homeassistant:
+#     packages: !include_dir_named packages
