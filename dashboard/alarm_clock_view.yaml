@@ -1,1 +1,617 @@
+###############################################################################
+# HA Alarm Clock — Dashboard View (Lovelace YAML)
+#
+# This is the alarm-clock view only. It is designed to run full-screen
+# on a dedicated bedroom tablet (e.g. Lenovo Tab, Amazon Fire HD) using
+# Fully Kiosk Browser or similar kiosk app.
+#
+# HOW TO USE:
+#   1. In HA, go to your dashboard → Edit → Raw Configuration Editor
+#   2. Under the `views:` key, paste this entire block as a new view entry.
+#   3. Make sure all required HACS cards are installed (see README).
+#
+# CUSTOMIZE: Search for "CUSTOMIZE" comments to find things to update.
+###############################################################################
 
+  - type: custom:grid-layout
+    path: alarm-clock
+    title: Alarm Clock
+    layout:
+      gridrows: auto
+      grid-template-columns: 100%
+      grid-template-areas: |
+        "c1"
+    cards:
+
+      # -----------------------------------------------------------------------
+      # SETTINGS POP-UP (opened by tapping the gear icon)
+      # -----------------------------------------------------------------------
+      - type: vertical-stack
+        cards:
+          - type: custom:bubble-card
+            card_type: pop-up
+            hash: '#alarm_settings'
+            bg_color: '#000000'
+            bg_opacity: '100'
+            card_layout: normal
+            margin: 13px
+            width_desktop: 350px
+            bg_blur: '0'
+            shadow_opacity: '0'
+            button_type: name
+            styles: |
+              .bubble-pop-up {
+                top: 20px !important;
+                max-height: 95vh !important;
+                overflow-y: hidden !important;
+                border-radius: 12px !important;
+              }
+              .bubble-pop-up * {
+                overflow-y: hidden !important;
+              }
+
+          - type: vertical-stack
+            cards:
+
+              # Time Picker
+              - type: custom:time-picker-card
+                entity: input_datetime.alarm_clock_time
+                hour_mode: 12
+                card_mod:
+                  style: |
+                    ha-card {
+                      background-color: white;
+                      max-height: 170px;
+                      overflow: hidden;
+                      width: 100%;
+                    }
+                    div {
+                      padding: 0px !important;
+                      margin: 0px !important;
+                    }
+
+              # Volume control
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    icon: mdi:minus
+                    show_name: false
+                    tap_action:
+                      action: call-service
+                      service: input_number.decrement
+                      target:
+                        entity_id: input_number.alarm_clock_volume
+                    styles:
+                      card:
+                        - height: 45px
+                        - width: 50px
+                        - background-color: white
+                        - color: black
+                        - margin-left: 55px
+                  - type: custom:button-card
+                    entity: input_number.alarm_clock_volume
+                    name: Volume
+                    show_name: true
+                    show_state: true
+                    show_icon: false
+                    tap_action:
+                      action: none
+                    styles:
+                      card:
+                        - height: 45px
+                        - width: 80px
+                        - background-color: white
+                        - color: black
+                      state:
+                        - font-size: 18px
+                        - text-align: center
+                  - type: custom:button-card
+                    icon: mdi:plus
+                    show_name: false
+                    tap_action:
+                      action: call-service
+                      service: input_number.increment
+                      target:
+                        entity_id: input_number.alarm_clock_volume
+                    styles:
+                      card:
+                        - height: 45px
+                        - width: 50px
+                        - background-color: white
+                        - color: black
+
+              # Snooze minutes control
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    icon: mdi:minus
+                    show_name: false
+                    tap_action:
+                      action: call-service
+                      service: input_number.decrement
+                      target:
+                        entity_id: input_number.alarm_clock_snooze_minutes
+                    styles:
+                      card:
+                        - height: 45px
+                        - width: 50px
+                        - background-color: white
+                        - color: black
+                        - margin-left: 45px
+                  - type: custom:button-card
+                    entity: input_number.alarm_clock_snooze_minutes
+                    name: Snooze Min
+                    show_name: true
+                    show_state: true
+                    show_icon: false
+                    tap_action:
+                      action: none
+                    styles:
+                      card:
+                        - height: 45px
+                        - width: 100px
+                        - background-color: white
+                        - color: black
+                      state:
+                        - font-size: 18px
+                        - text-align: center
+                  - type: custom:button-card
+                    icon: mdi:plus
+                    show_name: false
+                    tap_action:
+                      action: call-service
+                      service: input_number.increment
+                      target:
+                        entity_id: input_number.alarm_clock_snooze_minutes
+                    styles:
+                      card:
+                        - height: 45px
+                        - width: 50px
+                        - background-color: white
+                        - color: black
+
+              # Enabled toggle + Sound picker button
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: input_boolean.alarm_clock_enabled
+                    name: Enabled
+                    show_name: true
+                    show_state: true
+                    tap_action:
+                      action: toggle
+                    styles:
+                      card:
+                        - height: 70px
+                        - width: 130px
+                        - color: >-
+                            [[[ return states['sensor.alarm_clock_font_color'].state; ]]]
+                      state:
+                        - font-size: 20px
+                        - font-weight: bold
+                        - text-align: center
+                    card_mod:
+                      style: |
+                        ha-card {
+                          margin-left: 20px;
+                          background-color: white;
+                        }
+                  - type: custom:button-card
+                    name: Pick Sound
+                    show_name: true
+                    show_icon: false
+                    tap_action:
+                      action: navigate
+                      navigation_path: '#alarm_sound'
+                    styles:
+                      card:
+                        - height: 70px
+                        - width: 130px
+                        - background-color: white
+                        - color: >-
+                            [[[ return states['sensor.alarm_clock_font_color'].state; ]]]
+
+              # Tablet brightness slider
+              # CUSTOMIZE: Replace number.bedroom_tablet_screen_brightness with your entity
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mushroom-number-card
+                    name: Brightness
+                    entity: number.bedroom_tablet_screen_brightness
+                    layout: horizontal
+                    display_mode: slider
+                    icon: false
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background-color: white;
+                          box-shadow: none !important;
+                        }
+
+              # Font color hue slider
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mushroom-number-card
+                    name: Font Color
+                    entity: input_number.alarm_clock_font_hue
+                    layout: horizontal
+                    display_mode: slider
+                    icon: false
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background-color: white;
+                          box-shadow: none !important;
+                        }
+
+      # -----------------------------------------------------------------------
+      # SOUND PICKER POP-UP
+      # -----------------------------------------------------------------------
+      - type: vertical-stack
+        cards:
+          - type: custom:bubble-card
+            card_type: pop-up
+            hash: '#alarm_sound'
+            bg_color: '#000000'
+            bg_opacity: '100'
+            card_layout: normal
+            margin: 13px
+            width_desktop: 350px
+            bg_blur: '0'
+            shadow_opacity: '0'
+            close_on_click: true
+            styles: |
+              .bubble-pop-up {
+                top: 20px !important;
+                max-height: 95vh !important;
+                overflow-y: auto !important;
+                border-radius: 12px !important;
+              }
+
+          - type: vertical-stack
+            cards:
+              - type: custom:select-list-card
+                entity: input_select.alarm_clock_folder_songs
+                title: Pick Sound
+                max_options: 10
+                scroll_to_selected: true
+                truncate: true
+                show_toggle: false
+                card_mod:
+                  style: |
+                    ha-card {
+                      background-color: white;
+                      overflow-y: auto !important;
+                    }
+
+      # -----------------------------------------------------------------------
+      # MAIN CLOCK FACE
+      # -----------------------------------------------------------------------
+      - type: vertical-stack
+        cards:
+
+          # Top row: spacer | Day of week | Power button | Settings button
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                show_name: false
+                show_icon: false
+                styles:
+                  card:
+                    - width: 110px
+                    - min-width: 110px
+                    - height: 75px
+                    - background: transparent
+                    - box-shadow: none
+                tap_action:
+                  action: none
+
+              - type: custom:button-card
+                entity: sensor.day_of_the_week
+                show_name: false
+                show_state: true
+                show_icon: false
+                styles:
+                  card:
+                    - background: transparent
+                    - box-shadow: none
+                    - flex: 1
+                    - min-width: 0
+                  state:
+                    - font-size: 75px
+                    - font-weight: bold
+                    - text-align: center
+                    - color: >-
+                        [[[ return states['sensor.alarm_clock_font_color'].state; ]]]
+                tap_action:
+                  action: none
+                card_mod:
+                  style: |
+                    ha-card {
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-family: 'Digital-7', sans-serif;
+                    }
+
+              # Power / on-off toggle
+              - type: custom:button-card
+                entity: input_boolean.alarm_clock_enabled
+                show_name: false
+                show_icon: true
+                icon: mdi:power
+                tap_action:
+                  action: toggle
+                styles:
+                  card:
+                    - width: 50px
+                    - min-width: 50px
+                    - height: 75px
+                    - border-radius: 50%
+                    - background: black
+                    - box-shadow: none
+                  icon:
+                    - width: 36px
+                    - height: 36px
+                    - color: |
+                        [[[
+                          return states['input_boolean.alarm_clock_enabled'].state === 'on'
+                            ? 'limegreen'
+                            : 'red';
+                        ]]]
+
+              # Settings gear
+              - type: custom:button-card
+                show_name: false
+                show_icon: true
+                icon: mdi:cog
+                tap_action:
+                  action: navigate
+                  navigation_path: '#alarm_settings'
+                styles:
+                  card:
+                    - width: 50px
+                    - min-width: 50px
+                    - height: 75px
+                    - border-radius: 50%
+                    - background: black
+                    - box-shadow: none
+                  icon:
+                    - width: 36px
+                    - height: 36px
+                    - color: >-
+                        [[[ return states['sensor.alarm_clock_font_color'].state; ]]]
+
+          # Large time display
+          - type: custom:button-card
+            entity: sensor.alarm_clock_display
+            show_name: false
+            show_state: true
+            show_icon: false
+            styles:
+              state:
+                - font-size: 175px
+                - font-weight: bold
+                - text-align: center
+              card:
+                - height: 150px
+                - border-radius: 12px
+                - color: >-
+                    [[[ return states['sensor.alarm_clock_font_color'].state; ]]]
+                - margin-top: '-40px'
+            tap_action:
+              action: none
+            card_mod:
+              style: |
+                ha-card {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-family: 'Digital-7', sans-serif;
+                  background: transparent !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+
+          # Next alarm label
+          - type: custom:button-card
+            entity: sensor.alarm_clock_next_alarm
+            show_name: false
+            show_state: true
+            show_icon: false
+            state_display: |
+              [[[
+                if (states["input_boolean.alarm_clock_enabled"].state === "on") {
+                  return "Alarm set for " + states["sensor.alarm_clock_next_alarm"].state;
+                } else {
+                  return "NO ALARM SET";
+                }
+              ]]]
+            styles:
+              state:
+                - font-size: 20px
+                - font-weight: bold
+                - text-align: center
+                - padding: 0px
+              card:
+                - height: 20px
+                - border-radius: 12px
+                - color: >-
+                    [[[ return states["sensor.alarm_clock_font_color"].state; ]]]
+                - padding: 10px
+            tap_action:
+              action: none
+            card_mod:
+              style: |
+                ha-card {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-family: 'Digital-7', sans-serif;
+                  background: transparent !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+
+          # Date display
+          - type: custom:button-card
+            entity: sensor.today_date
+            show_name: false
+            show_state: true
+            show_icon: false
+            styles:
+              state:
+                - font-size: 50px
+                - font-weight: bold
+                - text-align: center
+                - padding-bottom: 5px
+              card:
+                - height: 20px
+                - border-radius: 12px
+                - color: >-
+                    [[[ return states['sensor.alarm_clock_font_color'].state; ]]]
+                - padding-bottom: 20px
+            tap_action:
+              action: none
+            card_mod:
+              style: |
+                ha-card {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-family: 'Digital-7', sans-serif;
+                  background: transparent !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+
+          # Temperature + weather condition
+          # CUSTOMIZE: Replace sensor.thermostat_outdoor_temperature with your sensor
+          - type: custom:button-card
+            entity: sensor.thermostat_outdoor_temperature
+            show_name: false
+            show_state: true
+            show_icon: false
+            state_display: |
+              [[[
+                let temp = parseFloat(states['sensor.thermostat_outdoor_temperature'].state);
+                temp = Math.round(temp);
+                // CUSTOMIZE: Change 'weather.forecast_home' to your weather entity
+                let forecast = states['weather.forecast_home'].state;
+                const map = {
+                  clear: "Clear", "clear-night": "Clear", cloudy: "Cloudy",
+                  partlycloudy: "Partly Cloudy", rainy: "Rain", pouring: "Heavy Rain",
+                  snowy: "Snow", "snowy-rainy": "Snow & Rain", fog: "Fog",
+                  hail: "Hail", lightning: "Lightning", "lightning-rainy": "Thunderstorms",
+                  windy: "Windy", "windy-variant": "Breezy", sunny: "Sunny",
+                  exceptional: "Exceptional"
+                };
+                forecast = map[forecast] || forecast;
+                // CUSTOMIZE: Change °F to °C if needed
+                return `${temp}°F - ${forecast}`;
+              ]]]
+            styles:
+              state:
+                - font-size: 30px
+                - font-weight: bold
+                - text-align: center
+                - padding-bottom: 0px
+              card:
+                - height: 15px
+                - border-radius: 8px
+                - color: >-
+                    [[[ return states['sensor.alarm_clock_font_color'].state; ]]]
+                - padding-bottom: 15px
+                - margin-top: '-20px'
+            tap_action:
+              action: none
+            card_mod:
+              style: |
+                ha-card {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-family: 'Digital-7', sans-serif;
+                  background: transparent !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+
+          # Snooze / Dismiss buttons — only shown when alarm is ringing
+          - type: conditional
+            conditions:
+              - entity: input_boolean.alarm_clock_ringing
+                state: 'on'
+            card:
+              type: horizontal-stack
+              cards:
+                - type: custom:button-card
+                  name: Snooze
+                  show_name: true
+                  icon: mdi:alarm-snooze
+                  tap_action:
+                    action: call-service
+                    service: script.turn_on
+                    target:
+                      entity_id: script.alarm_clock_snooze
+                  hold_action:
+                    action: none
+                  styles:
+                    card:
+                      - height: 100px
+                      - width: 150px
+                      - border-radius: 12px
+                      - text-align: center
+                      - color: "#FF0000"
+                    name:
+                      - font-size: 22px
+                      - font-weight: 600
+                    icon:
+                      - width: 54px
+                      - height: 54px
+                      - color: auto
+                  card_mod:
+                    style: |
+                      ha-card {
+                        margin-left: 225px;
+                        background: transparent !important;
+                        box-shadow: none !important;
+                      }
+                - type: custom:button-card
+                  name: Dismiss
+                  show_name: true
+                  icon: mdi:bell-off
+                  tap_action:
+                    action: call-service
+                    service: script.turn_on
+                    target:
+                      entity_id: script.alarm_clock_dismiss
+                  styles:
+                    card:
+                      - height: 100px
+                      - width: 150px
+                      - text-align: center
+                      - border-radius: 12px
+                      - color: "#00FF00"
+                    name:
+                      - font-size: 22px
+                      - font-weight: 600
+                    icon:
+                      - width: 54px
+                      - height: 54px
+                      - color: auto
+                  card_mod:
+                    style: |
+                      ha-card {
+                        background: transparent !important;
+                        box-shadow: none !important;
+                      }
+
+    # CUSTOMIZE: Replace with your own background image, or remove this block
+    background:
+      opacity: 100
+      alignment: center
+      size: cover
+      repeat: no-repeat
+      attachment: scroll
+      image: /local/your_alarm_background.jpg
