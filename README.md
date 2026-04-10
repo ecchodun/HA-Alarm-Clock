@@ -2,7 +2,9 @@
 
 A fully-featured, tablet-optimized alarm clock for Home Assistant. Designed to run full-screen on a dedicated bedroom tablet — looks great, sounds great, and is completely controlled from within HA.
 
-![Alarm Clock Screenshot](docs/screenshot.png)
+![Alarm Clock Screenshot](docs/screenshot1.png)
+![Alarm Clock Screenshot](docs/screenshot2.png)
+![Alarm Clock Screenshot](docs/screenshot3.png)
 
 ---
 
